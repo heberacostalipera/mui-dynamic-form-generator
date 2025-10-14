@@ -1,13 +1,19 @@
 import React, { useMemo } from "react";
-import { Button, Stack, Tooltip, Typography } from "@mui/material";
+
+// MUI
+import { Button, Paper, Stack, Typography } from "@mui/material";
 import {
   ContentCopy as CopyIcon,
   Check as CheckIcon,
 } from "@mui/icons-material";
 
+// JSON
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+// Hooks
+import { useFields } from "../context/fields-context";
 
 SyntaxHighlighter.registerLanguage("json", jsonLang);
 
@@ -41,16 +47,28 @@ function SchemaCopyButton({ schema }) {
   );
 }
 
-const SchemaContent = ({ schema }) => {
+const SchemaContentCard = () => {
+  const { fields } = useFields();
+  // eslint-disable-next-line no-unused-vars
+  const schema = useMemo(() => fields.map(({ id, ...rest }) => rest), [fields]);
+
   return (
-    <>
+    <Paper
+      elevation={0}
+      sx={{
+        border: "1px solid",
+        borderColor: "divider",
+        bgcolor: "background.paper",
+        overflow: "hidden",
+      }}
+    >
       <Stack
         direction="row"
         justifyContent="space-between"
         alignItems="center"
         p={2}
       >
-        <Typography variant="h6">Schema JSON</Typography>
+        <Typography variant="h6">Schema</Typography>
         <SchemaCopyButton schema={schema} />
       </Stack>
       <SyntaxHighlighter
@@ -67,8 +85,8 @@ const SchemaContent = ({ schema }) => {
       >
         {JSON.stringify(schema, null, 2)}
       </SyntaxHighlighter>
-    </>
+    </Paper>
   );
 };
 
-export default SchemaContent;
+export default SchemaContentCard;
