@@ -6,11 +6,36 @@ import FormBuilderCard from "./components/FormBuilderCard";
 import FormPreviewCard from "./components/FormPreviewCard";
 import FieldsProvider from "./providers/FieldsProvider";
 
+const styles = {
+  main: {
+    p: {
+      xs: 2,
+      md: 3,
+    },
+    bgcolor: "#fafafa",
+    minHeight: "100vh",
+  },
+  content: {
+    display: "flex",
+    flexDirection: {
+      xs: "column",
+      md: "row",
+    },
+    gap: 2,
+  },
+  column: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
+    flex: 1,
+  },
+};
+
 export default function App() {
   return (
     <FieldsProvider>
       <CssBaseline />
-      <Box sx={{ p: { xs: 2, md: 3 }, bgcolor: "#fafafa", minHeight: "100vh" }}>
+      <Box sx={styles.main}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           MUI 7 Dynamic Form Builder
         </Typography>
@@ -19,25 +44,9 @@ export default function App() {
           time. Export the schema as JSON.
         </Typography>
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: {
-              xs: "column",
-              md: "row",
-            },
-            gap: 2,
-          }}
-        >
+        <Box sx={styles.content}>
           <FormBuilderCard />
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              flex: 1,
-            }}
-          >
+          <Box sx={styles.column}>
             <FormPreviewCard />
             <SchemaContentCard />
           </Box>

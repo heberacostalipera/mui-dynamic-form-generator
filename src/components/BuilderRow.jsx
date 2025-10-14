@@ -1,4 +1,6 @@
 import React, { useCallback, useMemo } from "react";
+
+// MUI
 import {
   FormControl,
   FormControlLabel,
@@ -12,17 +14,22 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
+
+// Icons
 import {
   Delete as DeleteIcon,
   ContentCopy as CopyIcon,
   ArrowUpward as ArrowUpIcon,
   ArrowDownward as ArrowDownIcon,
 } from "@mui/icons-material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
+// Date Pickers
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
+
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 const FIELD_TYPES = [
   { id: "text", label: "Text" },
@@ -48,7 +55,7 @@ const TYPE_DEFAULTS = {
     minDateTime: "",
     maxDateTime: "",
   },
-  datetime: {
+  dateTime: {
     placeholder: "",
     helperText: "",
     dateTimeFormat: "DD/MM/YYYY HH:mm",
@@ -72,75 +79,75 @@ const applyTypeDefaults = (field, nextType) => {
     withDefaults.minDateTime = "";
     withDefaults.maxDateTime = "";
   }
-  if (nextType === "datetime") {
+  if (nextType === "dateTime") {
     withDefaults.minDate = "";
     withDefaults.maxDate = "";
   }
   return withDefaults;
 };
 
-const BuilderRow = React.memo(
-  function BuilderRow({
-    field,
-    index,
-    total,
-    onUpdate,
-    onRemove,
-    onMove,
-    onDuplicate,
-  }) {
-    const isFirst = index === 0;
-    const isLast = index === total - 1;
-    const isCheckbox = field.type === "checkbox";
-    const isSelect = field.type === "select";
-    const isDate = field.type === "date";
-    const isDateTime = field.type === "dateTime";
+const BuilderRow = ({
+  field,
+  index,
+  total,
+  onUpdate,
+  onRemove,
+  onMove,
+  onDuplicate,
+}) => {
+  const isFirst = index === 0;
+  const isLast = index === total - 1;
+  const isCheckbox = field.type === "checkbox";
+  const isSelect = field.type === "select";
+  const isDate = field.type === "date";
+  const isDateTime = field.type === "dateTime";
 
-    const handle = useCallback(
-      (key, val) => onUpdate({ ...field, [key]: val }),
-      [onUpdate, field]
-    );
+  const handle = useCallback(
+    (key, val) => onUpdate({ ...field, [key]: val }),
+    [onUpdate, field]
+  );
 
-    const onTypeChange = useCallback(
-      (e) => {
-        const raw = e.target.value;
-        const nextType = raw === "dateTime" ? "datetime" : raw;
-        const newValues = applyTypeDefaults(field, nextType);
+  const onTypeChange = useCallback(
+    (e) => {
+      const nextType = e.target.value;
+      const newValues = applyTypeDefaults(field, nextType);
+      if (Object.keys(newValues).some((k) => newValues[k] !== field[k]))
+        onUpdate(newValues);
+    },
+    [onUpdate, field]
+  );
 
-        let changed = false;
-        for (const k in newValues) {
-          if (newValues[k] !== field[k]) {
-            changed = true;
-            break;
-          }
-        }
-        if (changed) onUpdate(newValues);
-      },
-      [onUpdate, field]
-    );
+  const onMoveUp = useCallback(() => onMove(index, index - 1), [onMove, index]);
+  const onMoveDown = useCallback(
+    () => onMove(index, index + 1),
+    [onMove, index]
+  );
+  const onDup = useCallback(() => onDuplicate(field), [onDuplicate, field]);
+  const onDel = useCallback(() => onRemove(field.id), [onRemove, field.id]);
 
-    const onMoveUp = useCallback(
-      () => onMove(index, index - 1),
-      [onMove, index]
-    );
-    const onMoveDown = useCallback(
-      () => onMove(index, index + 1),
-      [onMove, index]
-    );
-    const onDup = useCallback(() => onDuplicate(field), [onDuplicate, field]);
-    const onDel = useCallback(() => onRemove(field.id), [onRemove, field.id]);
+  const typeItems = useMemo(
+    () =>
+      FIELD_TYPES.map((t) => (
+        <MenuItem key={t.id} value={t.id}>
+          {t.label}
+        </MenuItem>
+      )),
+    []
+  );
 
-    const typeItems = useMemo(
-      () =>
-        FIELD_TYPES.map((t) => (
-          <MenuItem key={t.id} value={t.id}>
-            {t.label}
-          </MenuItem>
-        )),
-      []
-    );
-
-    return (
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -8, scale: 0.98 }}
+      transition={{
+        type: "spring",
+        stiffness: 600,
+        damping: 38,
+        mass: 0.6,
+      }}
+    >
       <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
         <Stack
           direction={{ xs: "row" }}
@@ -329,24 +336,14 @@ const BuilderRow = React.memo(
           </Stack>
         </Stack>
       </Paper>
-    );
-  },
-  (prev, next) => {
-    const a = prev.field,
-      b = next.field;
-    return (
-      prev.index === next.index &&
-      prev.total === next.total &&
-      a.id === b.id &&
-      a.type === b.type &&
-      a.label === b.label &&
-      a.name === b.name &&
-      a.placeholder === b.placeholder &&
-      a.helperText === b.helperText &&
-      a.required === b.required &&
-      a.options === b.options
-    );
-  }
-);
+    </motion.div>
+  );
+};
 
-export default BuilderRow;
+export default React.memo(
+  BuilderRow,
+  (prev, next) =>
+    prev.index === next.index &&
+    prev.total === next.total &&
+    prev.field === next.field
+);

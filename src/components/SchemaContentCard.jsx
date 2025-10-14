@@ -52,6 +52,8 @@ const SchemaContentCard = () => {
   // eslint-disable-next-line no-unused-vars
   const schema = useMemo(() => fields.map(({ id, ...rest }) => rest), [fields]);
 
+  console.log("render schema card");
+
   return (
     <Paper
       elevation={0}

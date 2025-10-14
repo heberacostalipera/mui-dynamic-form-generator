@@ -59,6 +59,8 @@ const FormPreviewCard = () => {
     [validate, formValues, fields]
   );
 
+  console.log("render form preview card");
+
   return (
     <Paper
       elevation={0}
