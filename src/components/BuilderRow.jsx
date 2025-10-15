@@ -49,7 +49,7 @@ const TYPE_DEFAULTS = {
   date: {
     placeholder: "",
     helperText: "",
-    dateFormat: "DD/MM/YYYY",
+    format: "DD/MM/YYYY",
     minDate: "",
     maxDate: "",
     minDateTime: "",
@@ -58,7 +58,7 @@ const TYPE_DEFAULTS = {
   dateTime: {
     placeholder: "",
     helperText: "",
-    dateTimeFormat: "DD/MM/YYYY HH:mm",
+    format: "DD/MM/YYYY HH:mm",
     minDateTime: "",
     maxDateTime: "",
     minDate: "",
@@ -234,6 +234,7 @@ const BuilderRow = ({
             <>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                 <DatePicker
+                  format={field.format}
                   label="Min date"
                   value={field.minDate ? dayjs(field.minDate) : null}
                   onChange={(v) =>
@@ -243,6 +244,7 @@ const BuilderRow = ({
                   slotProps={{ textField: { fullWidth: true } }} // ⬅️ el input llena su contenedor
                 />
                 <DatePicker
+                  format={field.format}
                   label="Max date"
                   value={field.maxDate ? dayjs(field.maxDate) : null}
                   onChange={(v) =>
@@ -257,8 +259,8 @@ const BuilderRow = ({
                 <InputLabel>Date format</InputLabel>
                 <Select
                   label="Date format"
-                  value={field.dateFormat || "DD/MM/YYYY"}
-                  onChange={(e) => handle("dateFormat", e.target.value)}
+                  value={field.format || "DD/MM/YYYY"}
+                  onChange={(e) => handle("format", e.target.value)}
                 >
                   <MenuItem value="DD/MM/YYYY">DD/MM/YYYY</MenuItem>
                   <MenuItem value="MM/DD/YYYY">MM/DD/YYYY</MenuItem>
@@ -271,6 +273,7 @@ const BuilderRow = ({
             <>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                 <DateTimePicker
+                  format={field.format}
                   label="Min Date & Time"
                   ampm={false}
                   value={field.minDateTime ? dayjs(field.minDateTime) : null}
@@ -281,6 +284,7 @@ const BuilderRow = ({
                   slotProps={{ textField: { fullWidth: true } }}
                 />
                 <DateTimePicker
+                  format={field.format}
                   label="Max Date & Time"
                   ampm={false}
                   value={field.maxDateTime ? dayjs(field.maxDateTime) : null}
@@ -296,11 +300,11 @@ const BuilderRow = ({
                 <InputLabel>Date & time format</InputLabel>
                 <Select
                   label="Date & time format"
-                  value={field.dateTimeFormat || "DD/MM/YYYY HH:mm"}
-                  onChange={(e) => handle("dateTimeFormat", e.target.value)}
+                  value={field.format || "DD/MM/YYYY HH:mm"}
+                  onChange={(e) => handle("format", e.target.value)}
                 >
-                  <MenuItem value="DD/MM/YYYY HH:mm">dd/mm/yyyy HH:mm</MenuItem>
-                  <MenuItem value="MM/DD/YYYY HH:mm">mm/dd/yyyy HH:mm</MenuItem>
+                  <MenuItem value="DD/MM/YYYY HH:mm">DD/MM/YYYY HH:mm</MenuItem>
+                  <MenuItem value="MM/DD/YYYY HH:mm">MM/DD/YYYY HH:mm</MenuItem>
                 </Select>
               </FormControl>
             </>

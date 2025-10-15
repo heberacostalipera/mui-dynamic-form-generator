@@ -9,7 +9,9 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
 
 const FieldPreview = ({ field, value, onChange, error }) => {
   const common = {
@@ -63,11 +65,33 @@ const FieldPreview = ({ field, value, onChange, error }) => {
       );
     case "date":
       return (
+        <DatePicker
+          label={field.label}
+          format={field.format}
+          minDate={field.minDate ? dayjs(field.minDate) : undefined}
+          maxDate={field.maxDate ? dayjs(field.maxDate) : undefined}
+          value={value ? dayjs(value) : null}
+          onChange={(v) => onChange(field.name, v ?? null)}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              required: field.required,
+              helperText: error || field.helperText,
+              error: Boolean(error),
+            },
+          }}
+        />
+      );
+    case "dateTime":
+      return (
         <DateTimePicker
           label={field.label}
-          value={value || null}
-          onChange={(newValue) => onChange(field.name, newValue)}
+          format={field.format}
+          minDateTime={field.minDateTime ? dayjs(field.minDateTime) : undefined}
+          maxDateTime={field.maxDateTime ? dayjs(field.maxDateTime) : undefined}
           ampm={false}
+          value={value ? dayjs(value) : null}
+          onChange={(v) => onChange(field.name, v ?? null)}
           slotProps={{
             textField: {
               fullWidth: true,
