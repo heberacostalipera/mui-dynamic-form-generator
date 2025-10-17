@@ -45,7 +45,7 @@ const FIELD_TYPES = [
 
 const TYPE_DEFAULTS = {
   checkbox: { placeholder: "", helperText: "" },
-  select: { placeholder: "", helperText: "" },
+  select: { placeholder: "", helperText: "", multiple: false },
   date: {
     placeholder: "",
     helperText: "",
@@ -204,12 +204,23 @@ const BuilderRow = ({
           />
 
           {isSelect && (
-            <TextField
-              label={"Options (comma-separated)"}
-              value={field.options}
-              onChange={(e) => handle("options", e.target.value)}
-              fullWidth
-            />
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+              <TextField
+                label="Options (comma-separated)"
+                value={field.options}
+                onChange={(e) => handle("options", e.target.value)}
+                fullWidth
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={!!field.multiple}
+                    onChange={(e) => handle("multiple", e.target.checked)}
+                  />
+                }
+                label="Multiple"
+              />
+            </Stack>
           )}
 
           {!isSelect && !isCheckbox && !isDate && !isDateTime && (

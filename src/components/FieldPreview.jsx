@@ -1,6 +1,8 @@
 import React from "react";
 import {
+  Box,
   Checkbox,
+  Chip,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -103,17 +105,52 @@ const FieldPreview = ({ field, value, onChange, error }) => {
         />
       );
     case "select": {
+      const isMulti = !!field.multiple;
+
       const options = String(field.options || "")
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean);
+
+      // Normalizar value según el modo
+      const normalizedValue = isMulti
+        ? Array.isArray(value)
+          ? value
+          : []
+        : value ?? "";
+
+      const handleChange = (e) => {
+        const v = e.target.value;
+        onChange(field.name, isMulti ? (Array.isArray(v) ? v : [v]) : v);
+      };
+
+      const labelId = `select-label-${field.name}`;
+      const selectId = `select-${field.name}`;
+
       return (
         <FormControl fullWidth error={Boolean(error)}>
-          <InputLabel>{field.label}</InputLabel>
+          <InputLabel id={labelId}>{field.label}</InputLabel>
           <Select
+            labelId={labelId}
+            id={selectId}
             label={field.label}
-            value={value ?? ""}
-            onChange={(e) => onChange(field.name, e.target.value)}
+            multiple={isMulti}
+            value={normalizedValue}
+            onChange={handleChange}
+            renderValue={(selected) => {
+              if (isMulti) {
+                const arr = Array.isArray(selected) ? selected : [];
+                if (arr.length === 0) return <em>None</em>;
+                return (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {arr.map((val) => (
+                      <Chip key={val} label={val} />
+                    ))}
+                  </Box>
+                );
+              }
+              return selected ?? "";
+            }}
           >
             {options.map((opt) => (
               <MenuItem key={opt} value={opt}>
@@ -125,6 +162,7 @@ const FieldPreview = ({ field, value, onChange, error }) => {
         </FormControl>
       );
     }
+
     case "checkbox":
       return (
         <FormControlLabel
