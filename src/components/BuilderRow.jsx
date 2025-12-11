@@ -45,7 +45,7 @@ const FIELD_TYPES = [
 
 const TYPE_DEFAULTS = {
   checkbox: { placeholder: "", helperText: "" },
-  select: { placeholder: "", helperText: "", multiple: false },
+  select: { placeholder: "", helperText: "", multiple: false, options: [] },
   date: {
     placeholder: "",
     helperText: "",
@@ -66,15 +66,51 @@ const TYPE_DEFAULTS = {
   },
 };
 
+const BASE_KEYS = [
+  "id",
+  "name",
+  "label",
+  "type",
+  "required",
+  "fullWidth",
+  "helperText",
+];
+
+const TYPE_EXTRA_KEYS = {
+  text: ["placeholder"],
+  number: ["placeholder"],
+  email: ["placeholder"],
+  password: ["placeholder"],
+  textarea: ["placeholder"],
+  select: ["placeholder", "options", "multiple"],
+  checkbox: [],
+  date: ["placeholder", "format", "minDate", "maxDate"],
+  dateTime: ["placeholder", "format", "minDateTime", "maxDateTime"],
+};
+
 const applyTypeDefaults = (field, nextType) => {
-  const extra = TYPE_DEFAULTS[nextType] || {};
+  const extraDefaults = TYPE_DEFAULTS[nextType] || {};
+
+  const allowedKeys = new Set([
+    ...BASE_KEYS,
+    ...(TYPE_EXTRA_KEYS[nextType] || []),
+  ]);
+
+  // 1) Limpiar el field actual
+  const cleaned = Object.fromEntries(
+    Object.entries(field).filter(([k]) => allowedKeys.has(k))
+  );
+
+  // 2) Aplicar type + defaults, respetando valores ya seteados si existen
   const withDefaults = {
-    ...field,
+    ...cleaned,
     type: nextType,
     ...Object.fromEntries(
-      Object.entries(extra).map(([k, v]) => [k, field[k] ?? v])
+      Object.entries(extraDefaults).map(([k, v]) => [k, cleaned[k] ?? v])
     ),
   };
+
+  // 3) Ajustes puntuales entre date / dateTime si querés
   if (nextType === "date") {
     withDefaults.minDateTime = "";
     withDefaults.maxDateTime = "";
@@ -83,7 +119,47 @@ const applyTypeDefaults = (field, nextType) => {
     withDefaults.minDate = "";
     withDefaults.maxDate = "";
   }
+
   return withDefaults;
+};
+
+const SelectOptionsEditor = ({ options, onChange }) => {
+  const handleChange = (index, value) => {
+    const updated = [...options];
+    updated[index] = value;
+    onChange(updated);
+  };
+
+  const addOption = () => {
+    onChange([...options, ""]);
+  };
+
+  const removeOption = (index) => {
+    const updated = options.filter((_, i) => i !== index);
+    onChange(updated);
+  };
+
+  return (
+    <Stack spacing={2}>
+      {options.map((opt, index) => (
+        <Stack key={index} direction="row" spacing={2} alignItems="center">
+          <TextField
+            label={`Option ${index + 1}`}
+            value={opt}
+            onChange={(e) => handleChange(index, e.target.value)}
+            fullWidth
+          />
+          <IconButton color="error" onClick={() => removeOption(index)}>
+            <DeleteIcon />
+          </IconButton>
+        </Stack>
+      ))}
+
+      <IconButton color="primary" onClick={addOption}>
+        <CopyIcon />
+      </IconButton>
+    </Stack>
+  );
 };
 
 const BuilderRow = ({
@@ -204,13 +280,12 @@ const BuilderRow = ({
           />
 
           {isSelect && (
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-              <TextField
-                label="Options (comma-separated)"
-                value={field.options}
-                onChange={(e) => handle("options", e.target.value)}
-                fullWidth
+            <Stack spacing={2}>
+              <SelectOptionsEditor
+                options={Array.isArray(field.options) ? field.options : []}
+                onChange={(opts) => handle("options", opts)}
               />
+
               <FormControlLabel
                 control={
                   <Switch

@@ -7,7 +7,7 @@ export const newField = (overrides = {}) => ({
   fullWidth: true,
   placeholder: "",
   helperText: "",
-  options: "Option A, Option B",
+  options: ["Option A", "Option B"],
   // date/datetime config
   format: "DD/MM/YYYY",
   minDate: "",

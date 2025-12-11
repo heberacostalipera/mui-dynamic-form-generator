@@ -107,10 +107,13 @@ const FieldPreview = ({ field, value, onChange, error }) => {
     case "select": {
       const isMulti = !!field.multiple;
 
-      const options = String(field.options || "")
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
+      // Soportar tanto string[] como string con comas (backwards-compatible)
+      const options = Array.isArray(field.options)
+        ? field.options
+        : String(field.options || "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
 
       // Normalizar value según el modo
       const normalizedValue = isMulti
@@ -121,6 +124,7 @@ const FieldPreview = ({ field, value, onChange, error }) => {
 
       const handleChange = (e) => {
         const v = e.target.value;
+        // MUI Select multiple puede devolver string o string[]
         onChange(field.name, isMulti ? (Array.isArray(v) ? v : [v]) : v);
       };
 

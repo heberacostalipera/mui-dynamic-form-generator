@@ -12,6 +12,7 @@ import SchemaContentCard from "./components/SchemaContentCard";
 import FormBuilderCard from "./components/FormBuilderCard";
 import FormPreviewCard from "./components/FormPreviewCard";
 import FieldsProvider from "./providers/FieldsProvider";
+import SummaryCard from "./components/SummaryCard";
 
 const styles = {
   main: {
@@ -47,14 +48,7 @@ export default function App() {
       <CssBaseline />
       <Box sx={styles.main}>
         <Container maxWidth="xl">
-          <Typography variant="h4" fontWeight={700} gutterBottom>
-            MUI 7 Dynamic Form Builder
-          </Typography>
-          <Typography variant="body1" color="text.secondary" gutterBottom>
-            Add, edit and reorder fields; the right panel shows the form in real
-            time. Export the schema as JSON.
-          </Typography>
-
+          <SummaryCard />
           <Box sx={styles.content}>
             <FormBuilderCard />
             <Box sx={styles.column}>
